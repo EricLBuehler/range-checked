@@ -1,3 +1,10 @@
+#[derive(Debug, Clone)]
+pub struct BoundsError<T, B> {
+    pub input: T,
+    pub lo: B,
+    pub hi: B,
+}
+
 macro_rules! range_checked_integer {
     ($type:ty, $name:ident) => {
         pub struct $name<const LO: $type, const HI: $type, const INCLUSIVE: bool>($type);
@@ -5,10 +12,14 @@ macro_rules! range_checked_integer {
         impl<const LO: $type, const HI: $type> ::std::convert::TryFrom<$type>
             for $name<LO, HI, false>
         {
-            type Error = String;
-            fn try_from(other: $type) -> Result<Self, String> {
+            type Error = BoundsError<$type, $type>;
+            fn try_from(other: $type) -> Result<Self, Self::Error> {
                 if !(LO..HI).contains(&other) {
-                    Err(format!("Input {other} out of range {LO}..{HI}."))
+                    Err(BoundsError {
+                        input: other,
+                        lo: LO,
+                        hi: HI,
+                    })
                 } else {
                     Ok(Self(other))
                 }
@@ -18,10 +29,14 @@ macro_rules! range_checked_integer {
         impl<const LO: $type, const HI: $type> ::std::convert::TryFrom<$type>
             for $name<LO, HI, true>
         {
-            type Error = String;
-            fn try_from(other: $type) -> Result<Self, String> {
+            type Error = BoundsError<$type, $type>;
+            fn try_from(other: $type) -> Result<Self, Self::Error> {
                 if !(LO..=HI).contains(&other) {
-                    Err(format!("Input {other} out of range {LO}..{HI}."))
+                    Err(BoundsError {
+                        input: other,
+                        lo: LO,
+                        hi: HI,
+                    })
                 } else {
                     Ok(Self(other))
                 }
@@ -48,13 +63,17 @@ macro_rules! range_checked_float {
         impl<const LO: $int_type, const HI: $int_type> ::std::convert::TryFrom<$float_type>
             for $name<LO, HI, false>
         {
-            type Error = String;
-            fn try_from(other: $float_type) -> Result<Self, String>
+            type Error = BoundsError<$float_type, $int_type>;
+            fn try_from(other: $float_type) -> Result<Self, Self::Error>
             where
                 $float_type: From<$int_type>,
             {
                 if other < (LO as $float_type) || other >= (HI as $float_type) {
-                    Err(format!("Input {other} out of range {LO}..{HI}."))
+                    Err(BoundsError {
+                        input: other,
+                        lo: LO,
+                        hi: HI,
+                    })
                 } else {
                     Ok(Self(other))
                 }
@@ -64,10 +83,14 @@ macro_rules! range_checked_float {
         impl<const LO: $int_type, const HI: $int_type> ::std::convert::TryFrom<$float_type>
             for $name<LO, HI, true>
         {
-            type Error = String;
-            fn try_from(other: $float_type) -> Result<Self, String> {
+            type Error = BoundsError<$float_type, $int_type>;
+            fn try_from(other: $float_type) -> Result<Self, Self::Error> {
                 if other < (LO as $float_type) || other > (HI as $float_type) {
-                    Err(format!("Input {other} out of range {LO}..{HI}."))
+                    Err(BoundsError {
+                        input: other,
+                        lo: LO,
+                        hi: HI,
+                    })
                 } else {
                     Ok(Self(other))
                 }
