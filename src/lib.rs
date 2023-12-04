@@ -8,14 +8,12 @@
 //! ```rust,should_panic
 //! use range_checked::I32Bounded;
 //!
-//! fn main() {
-//!      // Panics
-//!     let _: I32Bounded<0, 128, false> = 128.try_into().unwrap();
-//!     // Successful
-//!     let _: I32Bounded<0, 128, true> = 128.try_into().unwrap();
-//!     // Successful
-//!     let _: I32Bounded<0, 128, false> = 64.try_into().unwrap();
-//! }
+//! // Panics
+//! let _: I32Bounded<0, 128, false> = 128.try_into().unwrap();
+//! // Successful
+//! let _: I32Bounded<0, 128, true> = 128.try_into().unwrap();
+//! // Successful
+//! let _: I32Bounded<0, 128, false> = 64.try_into().unwrap();
 //! ```
 
 #[derive(Debug, Clone)]
