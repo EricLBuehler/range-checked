@@ -1,3 +1,23 @@
+//! `range-checked` provides range checked types which leverage Rust's type system to encode the bounds.
+//! By encoding the bounds in the type, it is clear what values this type may have which may serve as a
+//! useful invariant.
+//!
+//! ## Example
+//! This example shows how `range-checked` is seamlessly used with Rust's conversion semantics. Note the third
+//! generic type parameter, which controls if the upper bound is inclusive.
+//! ```rust,should_panic
+//! use range_checked::I32Bounded;
+//!
+//! fn main() {
+//!      // Panics
+//!     let _: I32Bounded<0, 128, false> = 128.try_into().unwrap();
+//!     // Successful
+//!     let _: I32Bounded<0, 128, true> = 128.try_into().unwrap();
+//!     // Successful
+//!     let _: I32Bounded<0, 128, false> = 64.try_into().unwrap();
+//! }
+//! ```
+
 #[derive(Debug, Clone)]
 pub struct BoundsError<T, B> {
     pub input: T,
@@ -7,6 +27,8 @@ pub struct BoundsError<T, B> {
 
 macro_rules! range_checked_integer {
     ($type:ty, $name:ident) => {
+        /// Implements the `TryFrom` type, which attempts to convert to the contained type, returning an error if the input is out of bounds.
+        /// This type also implements [`Deref`] into the contained type.
         pub struct $name<const LO: $type, const HI: $type, const INCLUSIVE: bool>($type);
 
         impl<const LO: $type, const HI: $type> ::std::convert::TryFrom<$type>
@@ -56,6 +78,8 @@ macro_rules! range_checked_integer {
 
 macro_rules! range_checked_float {
     ($float_type:ty, $int_type:ty, $name:ident) => {
+        /// Implements the `TryFrom` type, which attempts to convert to the contained type, returning an error if the input is out of bounds.
+        /// This type also implements [`Deref`] into the contained type.
         pub struct $name<const LO: $int_type, const HI: $int_type, const INCLUSIVE: bool>(
             $float_type,
         );
