@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["BoundsError","F32Bounded","F64Bounded","I128Bounded","I16Bounded","I32Bounded","I64Bounded","I8Bounded","IsizeBounded","U128Bounded","U16Bounded","U32Bounded","U64Bounded","U8Bounded","UsizeBounded"]};
