@@ -394,3 +394,10 @@ fn test_f64_incl() {
         }
     }
 }
+
+#[test]
+fn test_from() {
+    let smaller_range: I32Bounded<0, 10, false> = 1.try_into().unwrap();
+    let bigger_range: I32Bounded<-10, 10, false> = 2.try_into().unwrap();
+    let _sum = *I32Bounded::<-10, 10, false>::from(smaller_range).unwrap() + *bigger_range;
+}

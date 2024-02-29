@@ -23,6 +23,19 @@ pub struct BoundsError<T, B> {
     pub hi: B,
 }
 
+#[derive(Debug, Clone)]
+pub enum FromErrorExpected {
+    LessEq,
+    GreaterEq,
+}
+
+#[derive(Debug, Clone)]
+pub struct FromError<T> {
+    pub current: T,
+    pub other: T,
+    pub expected: FromErrorExpected,
+}
+
 macro_rules! range_checked_integer {
     ($type:ty, $name:ident) => {
         /// Implements the `TryFrom` type, which attempts to convert to the contained type, returning an error if the input is out of bounds.
@@ -59,6 +72,32 @@ macro_rules! range_checked_integer {
                     })
                 } else {
                     Ok(Self(other))
+                }
+            }
+        }
+
+        impl<const LO: $type, const HI: $type, const INCLUSIVE: bool> $name<LO, HI, INCLUSIVE> {
+            const fn get(&self) -> $type {
+                self.0
+            }
+
+            pub const fn from<const LO2: $type, const HI2: $type>(
+                other: $name<LO2, HI2, INCLUSIVE>,
+            ) -> Result<Self, FromError<$type>> {
+                if LO2 < LO {
+                    Err(FromError {
+                        current: LO,
+                        other: LO2,
+                        expected: FromErrorExpected::GreaterEq,
+                    })
+                } else if HI2 > HI {
+                    Err(FromError {
+                        current: HI,
+                        other: HI2,
+                        expected: FromErrorExpected::LessEq,
+                    })
+                } else {
+                    Ok(Self(other.get()))
                 }
             }
         }
@@ -115,6 +154,34 @@ macro_rules! range_checked_float {
                     })
                 } else {
                     Ok(Self(other))
+                }
+            }
+        }
+
+        impl<const LO: $int_type, const HI: $int_type, const INCLUSIVE: bool>
+            $name<LO, HI, INCLUSIVE>
+        {
+            const fn get(&self) -> $float_type {
+                self.0
+            }
+
+            pub const fn from<const LO2: $int_type, const HI2: $int_type>(
+                other: $name<LO2, HI2, INCLUSIVE>,
+            ) -> Result<Self, FromError<$int_type>> {
+                if LO2 < LO {
+                    Err(FromError {
+                        current: LO,
+                        other: LO2,
+                        expected: FromErrorExpected::GreaterEq,
+                    })
+                } else if HI2 > HI {
+                    Err(FromError {
+                        current: HI,
+                        other: HI2,
+                        expected: FromErrorExpected::LessEq,
+                    })
+                } else {
+                    Ok(Self(other.get()))
                 }
             }
         }
