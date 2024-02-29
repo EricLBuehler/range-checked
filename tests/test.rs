@@ -1,6 +1,6 @@
 use range_checked::{
     F32Bounded, F64Bounded, I128Bounded, I16Bounded, I32Bounded, I64Bounded, I8Bounded,
-    U128Bounded, U16Bounded, U32Bounded, U64Bounded, U8Bounded,
+    IsizeBounded, U128Bounded, U16Bounded, U32Bounded, U64Bounded, U8Bounded, UsizeBounded,
 };
 
 #[test]
@@ -144,6 +144,34 @@ fn test_i128_incl() {
 }
 
 #[test]
+fn test_isize() {
+    const LO: isize = 0;
+    const HI: isize = 10;
+    for n in LO..HI + 10 {
+        let res = TryInto::<IsizeBounded<LO, HI, false>>::try_into(n);
+        if (LO..HI).contains(&n) {
+            assert!(res.is_ok());
+        } else {
+            assert!(res.is_err());
+        }
+    }
+}
+
+#[test]
+fn test_isize_incl() {
+    const LO: isize = 0;
+    const HI: isize = 10;
+    for n in LO..HI + 10 {
+        let res = TryInto::<IsizeBounded<LO, HI, true>>::try_into(n);
+        if (LO..=HI).contains(&n) {
+            assert!(res.is_ok());
+        } else {
+            assert!(res.is_err());
+        }
+    }
+}
+
+#[test]
 fn test_u8() {
     const LO: u8 = 0;
     const HI: u8 = 10;
@@ -275,6 +303,34 @@ fn test_u128_incl() {
     const HI: u128 = 10;
     for n in LO..HI + 10 {
         let res = TryInto::<U128Bounded<LO, HI, true>>::try_into(n);
+        if (LO..=HI).contains(&n) {
+            assert!(res.is_ok());
+        } else {
+            assert!(res.is_err());
+        }
+    }
+}
+
+#[test]
+fn test_usize() {
+    const LO: usize = 0;
+    const HI: usize = 10;
+    for n in LO..HI + 10 {
+        let res = TryInto::<UsizeBounded<LO, HI, false>>::try_into(n);
+        if (LO..HI).contains(&n) {
+            assert!(res.is_ok());
+        } else {
+            assert!(res.is_err());
+        }
+    }
+}
+
+#[test]
+fn test_usize_incl() {
+    const LO: usize = 0;
+    const HI: usize = 10;
+    for n in LO..HI + 10 {
+        let res = TryInto::<UsizeBounded<LO, HI, true>>::try_into(n);
         if (LO..=HI).contains(&n) {
             assert!(res.is_ok());
         } else {

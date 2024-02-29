@@ -135,12 +135,14 @@ range_checked_integer!(i16, I16Bounded);
 range_checked_integer!(i32, I32Bounded);
 range_checked_integer!(i64, I64Bounded);
 range_checked_integer!(i128, I128Bounded);
+range_checked_integer!(isize, IsizeBounded);
 
 range_checked_integer!(u8, U8Bounded);
 range_checked_integer!(u16, U16Bounded);
 range_checked_integer!(u32, U32Bounded);
 range_checked_integer!(u64, U64Bounded);
 range_checked_integer!(u128, U128Bounded);
+range_checked_integer!(usize, UsizeBounded);
 
 range_checked_float!(f32, i16, F32Bounded);
 range_checked_float!(f64, i32, F64Bounded);
